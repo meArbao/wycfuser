@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zybaiyou.wycfuser.mapper.Wy_store_barnnerMapper">
+    <resultMap id="BaseResultMap" type="com.zybaiyou.wycfuser.pojo.Wy_store_barnner">
+        <id column="store_barnner_id" jdbcType="INTEGER" property="barnnerid" />
+        <result column="store_id" jdbcType="BIGINT" property="store_id" />
+        <result column="sbguid" jdbcType="VARCHAR" property="sbguid" />
+        <result column="sbtitle" jdbcType="VARCHAR" property="title" />
+        <result column="sbimages" jdbcType="VARCHAR" property="images" />
+        <result column="sborderbycode" jdbcType="INTEGER" property="sborderbycode" />
+        <result column="sbcreattime" jdbcType="TIMESTAMP" property="creattime" />
+        <result column="sbstatus" jdbcType="VARCHAR" property="sbstatus" />
+        <result column="stype" jdbcType="INTEGER" property="stype" />
+        <result column="src" jdbcType="VARCHAR" property="src" />
+        <result column="sb_is_recommend_index" jdbcType="VARCHAR" property="sb_is_recommend_index" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        store_id,sbtitle
+    </sql>
+
+    <select id="getBanners" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        store_barnner_id,
+        sbcreattime,
+        sbguid,
+        sbimages,
+        sborderbycode,
+        sbstatus,
+        IFNULL(sbtitle,'') title,
+        store_barnner_id barnnerid,
+        store_id,
+        sb_is_recommend_index
+        from wy_store_barnner
+        where sb_is_recommend_index = #{sb_is_recommend_index,jdbcType=INTEGER}
+        order by sborderbycode desc
+    </select>
+</mapper>

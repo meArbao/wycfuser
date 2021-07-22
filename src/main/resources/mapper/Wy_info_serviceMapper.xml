@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zybaiyou.wycfuser.mapper.Wy_info_serviceMapper">
+    <resultMap id="BaseResultMap" type="com.zybaiyou.wycfuser.pojo.Wy_info_service">
+        <id column="ser_id" jdbcType="INTEGER" property="ser_id" />
+        <result column="store_id" jdbcType="BIGINT" property="store_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ser_id,stitle
+    </sql>
+
+    <!--查看首页无忧服务-->
+    <select id="FindInfoServices" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select * from wy_info_service where sstatus=0 order by ordercode desc,upcreatetime desc limit 0,#{limitnum,jdbcType=INTEGER}
+    </select>
+
+    <select id="getInfoServiceById" parameterType="java.lang.String" resultType="Wy_info_service">
+        select ${fieldkeylist} from wy_info_service where sstatus=0 and  ser_id = #{ser_id,jdbcType=INTEGER}
+    </select>
+    <!--查看首页无忧服务更新一条浏览记录-->
+    <update id="addInfoServiceViewNum">
+        update wy_info_service  set viewnum=viewnum+1 where ser_id= #{ser_id,jdbcType=INTEGER}
+    </update>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zybaiyou.wycfuser.mapper.Wy_goods_packageMapper">
+    <resultMap id="BaseResultMap" type="com.zybaiyou.wycfuser.pojo.Wy_goods_package">
+        <id column="p_id" jdbcType="INTEGER" property="p_id" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        *
+    </sql>
+
+    <!--获取首页的本期优惠套餐-->
+    <select id="GetRecommendGoodsPackage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        ifnull((select count(order_id) as num from wy_order_list where p_id=wy_goods_package.p_id),0) salenum
+        from wy_goods_package where pstatus=0 and pisrecommend=1 order by pcreatetime desc limit 0,1
+    </select>
+</mapper>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zybaiyou.wycfuser.mapper.Wy_VipCardInfoMapper">
+
+    <resultMap id="Wy_VipCardInfo" type="com.zybaiyou.wycfuser.pojo.Wy_VipCardInfo">
+        <result property="uname" column="uname"   jdbcType="VARCHAR" javaType="String" />
+        <result property="uphone" column="uphone"   jdbcType="VARCHAR" javaType="String" />
+        <result property="vip_cardno" column="cardno"   jdbcType="VARCHAR" javaType="String" />
+    </resultMap>
+
+    <resultMap id="totalRevenue" type="DECIMAL">
+        <result property="dec_total_revenue" column="dec_total_revenue"   jdbcType="DECIMAL" javaType="BigDecimal" />
+    </resultMap>
+
+    <resultMap id="Withdrawable" type="DECIMAL">
+        <result property="passable_withdrawable" column="passable_withdrawable"   jdbcType="DECIMAL" javaType="BigDecimal" />
+    </resultMap>
+
+    <resultMap id="totalScore" type="DECIMAL">
+        <result property="dec_total_score" column="dec_total_score"   jdbcType="DECIMAL" javaType="BigDecimal" />
+    </resultMap>
+<!--https://blog.csdn.net/renxing521/article/details/73296636-->
+    <select id="GetVipCardInfo" resultMap="totalRevenue,Withdrawable,totalScore,Wy_VipCardInfo">
+
+        with dec_total_revenue AS (select b.fee from wy_store_info a inner join wy_finance_store_cashflow b on a.store_id=b.store_id
+        where b.feetype in (15,21) and b.user_id=#{uid,jdbcType=BIGINT} union all select b.fee from wy_store_info a inner join wy_finance_store_cashflow b on a.store_id=b.store_id
+        where b.feestatus=18 and b.user_id=#{uid,jdbcType=BIGINT} and (b.income_and_expenditure=0 or b.income_and_expenditure=#{uid,jdbcType=BIGINT})
+        and b.createtime &lt;=(now()+interval-(12) hour)
+        )
+        select sum(fee) as dec_total_revenue from dec_total_revenue;
+        with passable_withdrawable AS (select b.fee from wy_user_info a inner join wy_finance_user_cashflow b on a.user_id=b.user_id
+        where b.feetype in (20,4,8) and a.user_id=#{uid,jdbcType=BIGINT}
+        union all
+        select b.fee from wy_user_info a inner join wy_finance_user_cashflow b on a.user_id=b.user_id
+        where b.feetype=5 and a.user_id=#{uid,jdbcType=BIGINT} and b.createtime &lt;=(now()+interval-(12)hour)
+        and (b.income_and_expenditure=0 or b.income_and_expenditure=1))
+        select sum(fee) as passable_withdrawable FROM passable_withdrawable;
+
+        with dec_total_score AS (select b.score as fee from wy_user_info a inner join wy_finance_user_scoreflow b on a.user_id=b.user_id
+                                 where b.scoreype in (2,3,6,16,17,21) and a.user_id=#{uid,jdbcType=BIGINT})
+        select sum(fee) as dec_total_score FROM dec_total_score;
+        select username uname,uphone,vip_cardno from wy_user_info where ustatus=0 and user_id=#{uid,jdbcType=BIGINT} limit 0,1;
+
+    </select>
+</mapper>
